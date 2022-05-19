@@ -3,7 +3,7 @@
 
 
 
-
+echo "testiramo nove stvari"
 nvm --version
 
 
