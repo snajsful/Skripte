@@ -1,5 +1,4 @@
 #!/bin/bash
-set -e
 php_ver="false"
 composer_ver="false"
 node_ver="false"
@@ -84,37 +83,6 @@ password="$password+!=ABC"
 
 domain_usr="${domain_name}_usr"
 ############################################################################
-#kod za kreiranje baze:
-set +e #Turning off the exit upon error function
-result=`sudo mysql -e "show databases" |grep -w  $domain_name`
-
-if [ "$result" == "$domain_name" ]; then
-
-	echo -e "$inversvid The database already exists!$resetvid"
-else 
-
-	sudo mysql -e "create database $domain_name;"
-
-	sudo mysql -e "create user '$domain_usr'@'localhost' identified by '$password';"
-
-	sudo mysql -e "grant all on $domain_name.* to '$domain_usr'@'localhost';"
-
-	sudo mysql -e "flush privileges;"
-
-        printf 'Database creation in progress: '
-        spinner &
-
-        sleep 4  # sleeping for 10 seconds is important work
-
-        kill "$!" # kill the spinner
-        printf '\n'
-
-	echo "DATABASE has been created under the name of : $domain_name"
-	echo "The Database USER is : $domain_usr"
-	echo "The database PASSWORD is: $password"
-fi
-
-###########################################
 #Code for creating project-repo and cloning project via git
 
 
@@ -127,7 +95,7 @@ if [ $git_link == "false"  ]; then
 		read git_link
         	git ls-remote $git_link 2>/dev/null 1>/dev/null
        		 if [ $? -eq 0 ];then
-                	git clone $git_link
+                	git clone $git_link $domain
                		 break
        		 else
                 	echo -e "$blueback Try again$resetvid"
@@ -136,15 +104,11 @@ if [ $git_link == "false"  ]; then
 
 	done
 
-	git clone "$git_link"
-	git_repo=`ls -1t | head -1`
-	mv /var/websites/$git_repo /var/websites/$domain
+
 else
 
         cd /var/websites
-        git clone "$git_link"
-        git_repo=`ls -1t | head -1`
-        mv /var/websites/$git_repo /var/websites/$domain
+        git clone "$git_link" $domain
 
 fi
 
@@ -152,12 +116,12 @@ fi
 	
 if [ $git_branch == "false" ];then
 	echo -e "$blueback Please provide the branch name for cloned Git project:$resetvid"
-	cd /var/websites/hajde.amplitudo.me
+	cd /var/websites/$domain
         while true; do
                 read git_branch
                 #true_branch=`git branch -r |grep -o "$git_branch" `
 
-                git switch $git_branch 1>/dev/null 2>/dev/null
+                git switch $git_branch #1>/dev/null 2>/dev/null
 
        if [ $? -eq 128 ]; then
                         let "k+=1"
@@ -182,17 +146,19 @@ if [ $git_branch == "false" ];then
 
         done
 
-	#git switch $git_branch
-	sudo chown -R stevan:www-data /var/websites/$domain   #####Change user 'stevan' with your local user
-	sudo find /var/websites/$domain -type f -exec chmod 0644 {} \;
-	sudo find /var/websites/$domain -type d -exec chmod 755 {} \;
-
 else
         cd /var/websites/$domain
         git switch $git_branch
-        sudo chown -R stevan:www-data /var/websites/$domain   #####Change user 'stevan' with your local user
-        sudo find /var/websites/$domain -type f -exec chmod 0644 {} \;
-        sudo find /var/websites/$domain -type d -exec chmod 755 {} \;
+	while [ $? -ne 0 ]; do
+                        echo -e "$blueback Branch-o Trash-o, try again$resetvid"
+                        read git_branch
+                        git switch $git_branch
+
+        done
+        echo -e "$greenback Good boi.$resetvid"
+	espeak-ng "Good Boi"
+
+
 
 
 
@@ -205,22 +171,26 @@ export php_ver
 export composer_ver
 export node_ver
 export domain
+export -f spinner
 
-if [ "$node_ver" == "false" ]; then
-	if [ "$php_version" == "false" ] || [ "$composer_ver" == "false" ]; then
-
-		sudo chmod -R 775 /var/websites/$domain/storage /var/websites/$domain/bootstrap
+if [ $php_ver == "false" ]; then
+	echo -e "$blueback Which project is this? 1.Laravel  2.Wue(front).$resetvid"
+	while true; do
+		read is_laravel
+		if [ $is_laravel == "1" ]; then
 		bash /home/stevan/skripte/laravel.sh
-	else
-
-		sudo chmod -R 775 /var/websites/$domain/storage /var/websites/$domain/bootstrap
-                bash /home/stevan/skripte/laravel.sh
-
-
-	fi
-	
-
+			break
+		elif [ $is_laravel == "2" ]; then
+			#bash frontendskriptu
+			break
+		else 
+			echo "$blueback Try again homo$resetvid"
+		fi
+	done
 fi
+
+
+
 
 
 

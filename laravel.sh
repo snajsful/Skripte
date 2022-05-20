@@ -3,6 +3,45 @@
 
 
 
+#Creating database code:
+set +e #Turning off the exit upon error function
+result=`sudo mysql -e "show databases" |grep -w  $domain_name`
+
+if [ "$result" == "$domain_name" ]; then
+
+        echo -e "$inversvid The database already exists!$resetvid"
+else
+
+        sudo mysql -e "create database $domain_name;"
+
+        sudo mysql -e "create user '$domain_usr'@'localhost' identified by '$password';"
+
+        sudo mysql -e "grant all on $domain_name.* to '$domain_usr'@'localhost';"
+
+        sudo mysql -e "flush privileges;"
+
+        printf 'Database creation in progress: '
+        spinner &
+
+        sleep 4  # sleeping for 10 seconds is important work
+
+        kill "$!" # kill the spinner
+        printf '\n'
+
+        echo "DATABASE has been created under the name of : $domain_name"
+        echo "The Database USER is : $domain_usr"
+        echo "The database PASSWORD is: $password"
+fi
+###################################################################################################
+
+ 	sudo chown -R stevan:www-data /var/websites/$domain   #####Change user 'stevan' with your local user
+        sudo find /var/websites/$domain -type f -exec chmod 0644 {} \;
+	sudo find /var/websites/$domain -type d -exec chmod 755 {} \;
+
+
+sudo chmod -R 775 /var/websites/$domain/storage /var/websites/$domain/bootstrap
+
+
 if [ $php_ver == "false" ]; then
 		echo "What is your PHP version?"
 		read php_ver
@@ -50,8 +89,8 @@ sed -i 's/DB_PASSWORD=/DB_PASSWORD='$password'/g' .env
 
 
   fi
-
- 	if [ $node_ver == "false"  ]; then
+	
+ 	if [ $node_ver == "false" ]; then
 		echo what is your node version
 	    while true; do
         	read node_version
@@ -64,8 +103,9 @@ sed -i 's/DB_PASSWORD=/DB_PASSWORD='$password'/g' .env
 			fi
 
 	    done
+    	
 
-	else 
+	else  
 		nvm install $node_version
 	       while [ $? -ne 0 ]; do
                 	echo "Invalid version, try again."
