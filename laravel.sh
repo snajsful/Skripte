@@ -92,8 +92,8 @@ if [ $node_ver != "1234" ];then
  	if [ $node_ver == "false" ];then
 		echo -e "$blueback What is your node version?$resetvid"
 	    while true; do
-        	read node_version
-        	nvm install $node_version
+        	read node_ver
+        	nvm install $node_ver
 
 			if [ $? -ne 0 ]; then
         			echo -e "$blueback try again$resetvid"
@@ -105,11 +105,11 @@ if [ $node_ver != "1234" ];then
     	
 
 	else  
-		nvm install $node_version
+		nvm install $node_ver
 	       while [ $? -ne 0 ]; do
                 	echo -e "$blueback Invalid version, try again.$resetvid"
-			read node_version
-			nvm install $node_version
+			read node_ver
+			nvm install $node_ver
 
         	    done
 

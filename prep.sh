@@ -1,5 +1,5 @@
 #!/bin/bash
-MANPATH /usr/local/man/lamp1
+#MANPATH /usr/local/man/lamp1
 php_ver="false"
 composer_ver="false"
 node_ver="false"
@@ -182,8 +182,8 @@ export -f spinner
 
 if [ $tech == "false" ]; then
 echo -e "$blueback Which technology do you wish to be deployed(Type the number in) 1.Laravel 2.Wue 3.Laravel + Wue 4.React 5.Next. 6.Strapi 7.Spring$resetvid"
-fi
 read tech
+fi
 
 while true; do
         if [[ $tech != 1 && $tech != 2 && $tech != 3 && $tech != 4 && $tech != 5 && $tech != 6 && $tech != 7 ]]; then
