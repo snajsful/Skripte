@@ -86,18 +86,17 @@ sed -i 's/DB_PASSWORD=/DB_PASSWORD='$password'/g' .env
         php artisan key:generate
         php artisan jwt:secret
 
+fi
 
-
-  fi
-	
- 	if [ $node_ver == "false" ]; then
-		echo what is your node version
+if [ $node_ver != "1234" ];then
+ 	if [ $node_ver == "false" ];then
+		echo -e "$blueback What is your node version?$resetvid"
 	    while true; do
         	read node_version
         	nvm install $node_version
 
 			if [ $? -ne 0 ]; then
-        			echo try again
+        			echo -e "$blueback try again$resetvid"
 			else
         			break;
 			fi
@@ -108,13 +107,14 @@ sed -i 's/DB_PASSWORD=/DB_PASSWORD='$password'/g' .env
 	else  
 		nvm install $node_version
 	       while [ $? -ne 0 ]; do
-                	echo "Invalid version, try again."
+                	echo -e "$blueback Invalid version, try again.$resetvid"
 			read node_version
 			nvm install $node_version
 
         	    done
 
 	fi
+fi
 ####################################################################################################
 	#Now its time to configure APACHE BOI
 		sudo touch /etc/apache2/sites-available/$domain.conf
@@ -203,9 +203,9 @@ myvar=`sudo apachectl configtest 2>&1 >/dev/null |grep 'Syntax OK'`
 echo $myvar
 if [ "$myvar" == "Syntax OK" ]; then
         sudo systemctl reload apache2
-        echo Project deployment successfull. Proceed to the following link $domain
+        echo -e "$greenback Project deployment successfull. Proceed to the following link $domain $resetvid"
 else 
-	echo There are problems in apache virtualhost configuration
+	echo -e "$inversvid There are problems in apache virtualhost configuration$resetvid"
 	exit 1 
 fi
 
