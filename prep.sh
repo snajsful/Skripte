@@ -1,10 +1,12 @@
 #!/bin/bash
+MANPATH /usr/local/man/lamp1
 php_ver="false"
 composer_ver="false"
 node_ver="false"
 domain_name="false"
 git_branch="false"
 git_link="false"
+tech="false"
 k=0
 inversvid="\0033[7m"
 resetvid="\0033[0m"
@@ -27,7 +29,7 @@ spinner() {
 
 ###############################################################################################
 
-while getopts ":d:g:b:p:c:n:" options; do
+while getopts ":t:d:g:b:p:c:n:" options; do
 	case "$options" in 
 		
 		d)	
@@ -48,6 +50,9 @@ while getopts ":d:g:b:p:c:n:" options; do
 		n)
 			node_ver=${OPTARG}
 			;;
+		t)	
+			tech=${OPTARG}
+			;;	
 	esac
 done
 ##############################################################################################
@@ -173,56 +178,50 @@ export node_ver
 export domain
 export -f spinner
 
-if [ $php_ver == "false" ]; then
-	echo -e "$blueback Which project is this? 1.Laravel  2.Wue(front).$resetvid"
-	while true; do
-		read is_laravel
-		if [ $is_laravel == "1" ]; then
-		bash /home/stevan/skripte/laravel.sh
-			break
-		elif [ $is_laravel == "2" ]; then
-			#bash frontendskriptu
-			break
-		else 
-			echo "$blueback Try again homo$resetvid"
-		fi
-	done
+		
+
+if [ $tech == "false" ]; then
+echo -e "$blueback Which technology do you wish to be deployed(Type the number in) 1.Laravel 2.Wue 3.Laravel + Wue 4.React 5.Next. 6.Strapi 7.Spring$resetvid"
 fi
+read tech
 
+while true; do
+        if [[ $tech != 1 && $tech != 2 && $tech != 3 && $tech != 4 && $tech != 5 && $tech != 6 && $tech != 7 ]]; then
+        echo -e "$blueback Wrong fkin value, Amazing work. Try again.$resetvid"
+        read tech
+else 
+	break
+        fi
+done
 
+	case $tech in 
 
+	1)	
+		node_ver="1234"
+		bash /home/stevan/skripte/laravel.sh
+		;;
 
+	2)
+		#bash /home/stevan/skripte/
+		;;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+	3)	
+		bash /home/stevan/skripte/laravel.sh
+		;;
+	4)
+		#bash /home/stevan/skripte/
+		;;
+	5)
+		#bash /home/stevan/skripte/
+		;;
+	6)
+		#bash /home/stevan/skripte/
+		;;
+	7)
+		#bash /home/stevan/skripte/
+		;;
+	*)	
+		echo "Good job. You even managed to miss a simple number. Try again."
+		;;	
+esac
 
