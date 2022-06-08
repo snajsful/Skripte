@@ -15,7 +15,7 @@ blueback="\0033[1;37;44m"
 
 
 
-figlet -f slant "WELCOME TO THE I RARELY WORK SCRIPT"
+figlet -f slant "Currently supported tech: 1.Laravel 2.Laravel + vue"
 spinner() {
     local i sp n
     sp='/-\|'
