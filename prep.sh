@@ -15,7 +15,7 @@ blueback="\0033[1;37;44m"
 
 
 
-figlet -f slant "Currently supported tech: 1.Laravel 2.Laravel + vue"
+figlet -f slant "Currently supported tech: 1.Laravel 2.Laravel + vue 3. Vuejs"
 spinner() {
     local i sp n
     sp='/-\|'
