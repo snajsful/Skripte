@@ -203,7 +203,7 @@ done
 		;;
 
 	2)
-		#bash /home/stevan/skripte/
+		bash /home/stevan/skripte/vuejs.sh
 		;;
 
 	3)	
