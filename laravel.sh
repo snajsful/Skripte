@@ -1,4 +1,9 @@
 #!/bin/bash
+inversvid="\0033[7m"
+resetvid="\0033[0m"
+greenback="\0033[1;37;42m"
+blueback="\0033[1;37;44m"
+
 . ~/.nvm/nvm.sh
 
 
@@ -41,14 +46,37 @@ fi
 
 sudo chmod -R 775 /var/websites/$domain/storage /var/websites/$domain/bootstrap
 
-
+grep_phpver=`ls /usr/bin | grep "php[0-9].*" | cut -c 4-`
 if [ $php_ver == "false" ]; then
-		echo "What is your PHP version?"
+		echo -e "$blueback What is your PHP version? Current available versions are:$resetvid"
+		echo -e "$inversvid$grep_phpver$resetvid"
 		read php_ver
-		#echo "What is your composer version?"
-		#read composer_ver
+		while true; do
+		if [[ $php_ver == [0-9].[0-9] ]];then
+			break
+		else
+        		echo -e "$blueback Wrong php version/format.Current Available versions are:$resetvid"
+			echo -e "$greenback$grep_phpver$resetvid"
+			read php_ver
+		fi
+	done
+
+
+else 
+	while true; do
+                if [[ $php_ver == [0-9].[0-9] ]];then
+                        break
+                else
+			echo -e "$blueback Wrong php version/format.Current Available versions are:"
+                        echo -e "$greenback$grep_phpver$resetvid"
+
+                        read php_ver
+                fi
+        done
 
 fi
+
+
 
 
 cd /var/websites/$domain
@@ -57,36 +85,57 @@ sed -i 's/DB_DATABASE=.*/DB_DATABASE='$domain_name'/g' .env
 sed -i 's/DB_USERNAME=.*/DB_USERNAME='$domain_usr'/g' .env
 sed -i 's/DB_PASSWORD=/DB_PASSWORD='$password'/g' .env
 
- if [ $php_ver == "8" ]; then
-	cd /var/websites/$domain
-	php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-	#php -r "if (hash_file('sha384', 'composer-setup.php') === '906a84df04cea2aa72f40b5f787e49f22d4c2f19492ac310e8cba5b96ac8b64115ac402c8cd292b8a03482574915d1a8') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
- 	php composer-setup.php
-	php -r "unlink('composer-setup.php');"
-	php8 composer.phar install
-	php8 artisan migrate:fresh --seed
-	php8 artisan storage:link
-	php8 artisan key:generate
-	php8 artisan jwt:secret
+grepko=`ls /usr/bin/ | grep -o "php$php_ver"`
+if [[ "php$php_ver" == "$grepko" ]]; then
+php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+        #php -r "if (hash_file('sha384', 'composer-setup.php') === '906a84df04cea2aa72f40b5f787e49f22d4c2f19492ac310e8cba5b96ac8b64115ac402c8cd292b8a03482574915d1a8') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
+        php composer-setup.php
+        php -r "unlink('composer-setup.php');"
+        php$php_ver composer.phar install
+        php$php_ver artisan migrate:fresh --seed
+        php$php_ver artisan storage:link
+        php$php_ver artisan key:generate
+        php$php_ver artisan jwt:secret
 	
+else
+        sudo apt install lsb-release ca-certificates apt-transport-https software-properties-common -y
+sudo add-apt-repository ppa:ondrej/php
+
+        sudo apt-get install php$php_ver php$php_ver-fpm php$php_ver-mysql libapache2-mod-php$php_ver php$php_ver-cli php$php_ver-common php$php_ver-imap php$php_ver-redis php$php_ver-snmp php$php_ver-xml php$php_ver-curl
+
+			while [ $? -ne 0 ];do
+				echo -e "$blueback The PHP version you entered does not exists you malnourished peasant.AGAIN!$resetvid"
+				read php_ver
+				sudo apt-get install php$php_ver php$php_ver-fpm php$php_ver-mysql libapache2-mod-php$php_ver php$php_ver-cli php$php_ver-common php$php_ver-imap php$php_ver-redis php$php_ver-snmp php$php_ver-xml php$php_ver-curl
+			done
 		
- fi
 
-  if [ "$php_ver" == "7.4" ]; then
-	
 
-	cd /var/websites/$domain
+sudo a2enmod actions alias proxy_fcgi
+sudo a2dismod php$php_ver
+sudo systemctl start php$php_ver-fpm
+sudo update-alternatives --set php /usr/bin/php7.4
+sudo systemctl reload apache2
+
+alias_test=`cat ~/.bashrc | grep -o "/usr/bin/php$php_ver"`
+        if ! [[ "$alias_test" == "/usr/bin/php$php_ver" ]]; then
+        echo "alias php$php_ver="/usr/bin/php$php_ver"" >> ~/.bashrc
+        echo -e "$greenback Alias imported successfuly$resetvid"
+        fi
+
         php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
         #php -r "if (hash_file('sha384', 'composer-setup.php') === '906a84df04cea2aa72f40b5f787e49f22d4c2f19492ac310e8cba5b96ac8b64115ac402c8cd292b8a03482574915d1a8') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
         php composer-setup.php
         php -r "unlink('composer-setup.php');"
-        php composer.phar install
-        php artisan migrate:fresh --seed
-        php artisan storage:link
-        php artisan key:generate
-        php artisan jwt:secret
+        php$php_ver composer.phar install
+        php$php_ver artisan migrate:fresh --seed
+        php$php_ver artisan storage:link
+        php$php_ver artisan key:generate
+        php$php_ver artisan jwt:secret
 
 fi
+
+
 
 if [ $node_ver != "1234" ];then
  	if [ $node_ver == "false" ];then

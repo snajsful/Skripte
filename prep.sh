@@ -15,8 +15,7 @@ blueback="\0033[1;37;44m"
 
 
 
-
-
+figlet -f slant "WELCOME TO THE I RARELY WORK SCRIPT"
 spinner() {
     local i sp n
     sp='/-\|'
@@ -100,7 +99,7 @@ if [ $git_link == "false"  ]; then
 		read git_link
         	git ls-remote $git_link 2>/dev/null 1>/dev/null
        		 if [ $? -eq 0 ];then
-                	git clone $git_link $domain
+                	git clone $git_link $domain 
                		 break
        		 else
                 	echo -e "$blueback Try again$resetvid"
@@ -122,6 +121,7 @@ fi
 if [ $git_branch == "false" ];then
 	echo -e "$blueback Please provide the branch name for cloned Git project:$resetvid"
 	cd /var/websites/$domain
+	git pull
         while true; do
                 read git_branch
                 #true_branch=`git branch -r |grep -o "$git_branch" `
@@ -153,6 +153,7 @@ if [ $git_branch == "false" ];then
 
 else
         cd /var/websites/$domain
+	git pull
         git switch $git_branch
 	while [ $? -ne 0 ]; do
                         echo -e "$blueback Branch-o Trash-o, try again$resetvid"
